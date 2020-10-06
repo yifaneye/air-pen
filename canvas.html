@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Air Pen</title>
+	<link href="normalize.css" rel="stylesheet" type="text/css">
+	<style>
+		html {
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+
+		body {
+			background-color: grey;
+		}
+
+		.o-select-none {
+			user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+		}
+
+		.o-canvas-wrapper {
+			width: calc(100% - 40px);
+			height: calc(100% - 40px);
+		}
+
+		#o-canvas {
+			cursor: crosshair;
+			background-color: white;
+			-ms-touch-action: pinch-zoom;
+			touch-action: pinch-zoom;
+		}
+	</style>
+</head>
+<body>
+<div class="o-canvas-wrapper">
+	<canvas class="o-select-none" id="o-canvas">Your browser needs to be updated!</canvas>
+</div>
+
+<script>
+	const canvas = document.querySelector('#o-canvas');
+
+	canvas.width = window.innerWidth - 40;
+	canvas.height = window.innerHeight - 40;
+	canvas.addEventListener('pointerdown', start_drawing);
+	canvas.addEventListener('pointermove', draw);
+	canvas.addEventListener('pointerup', stop_drawing);
+	canvas.addEventListener('mouseout', stop_drawing);
+	document.addEventListener('keydown', process_drawing);
+
+	const context = canvas.getContext('2d');
+	context.strokeStyle = 'black';
+	context.lineJoin = 'round';
+	context.lineCap = 'round';
+	context.lineWidth = 5;
+
+	class Pen {
+		/**
+		 * @return {null}
+		 */
+		constructor() {
+			if (pen) {
+				return pen;
+			}
+			this.isOn = false;
+			this.x = 0;
+			this.y = 0;
+
+		}
+
+		turn_on() {
+			this.isOn = true;
+		}
+
+		turn_off() {
+			this.isOn = false;
+		}
+
+		record_position({offsetX, offsetY}) {
+			this.x = offsetX;
+			this.y = offsetY;
+		}
+	}
+
+	let pen = null;
+	pen = new Pen();
+
+	function start_drawing(event) {
+		if (event.pointerType === 'touch') return;
+
+		pen.turn_on();
+
+		pen.record_position(event);
+	}
+
+	function draw(event) {
+		if (!pen.isOn) return;
+
+		context.beginPath();
+		context.moveTo(pen.x, pen.y);
+		context.lineTo(event.offsetX, event.offsetY);
+		context.stroke();
+
+		pen.record_position(event);
+	}
+
+	function stop_drawing(event) {
+		pen.turn_off();
+
+		pen.record_position(event);
+	}
+
+	function process_drawing(event) {
+		if (event.ctrlKey && event.key === "s") {
+			window.location = canvas.toDataURL('image/png');
+		}
+	}
+
+</script>
+</body>
+</html>
