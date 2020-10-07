@@ -53,11 +53,13 @@
 </div>
 <div class="o-buttons-wrapper">
 	<button class="o-button" id="o-clear-button">Clear</button>
+	<button class="o-button" id="o-save-button">Save</button>
 </div>
 
 <script>
 	const canvas = document.querySelector('#o-canvas');
 	const clearButton = document.getElementById("o-clear-button");
+	const saveButton = document.getElementById("o-save-button");
 
 	canvas.width = window.innerWidth - 40;
 	canvas.height = window.innerHeight - 40;
@@ -66,6 +68,7 @@
 	canvas.addEventListener('pointerup', stop_drawing);
 	canvas.addEventListener('mouseout', stop_drawing);
 	clearButton.addEventListener('click', clear_drawing);
+	saveButton.addEventListener('click', save_drawing);
 	document.addEventListener('keydown', process_drawing);
 
 	const context = canvas.getContext('2d');
@@ -134,9 +137,13 @@
 		context.clearRect(0, 0, canvas.width, canvas.height);
 	}
 
+	function save_drawing() {
+		window.location = canvas.toDataURL('image/png');
+	}
+
 	function process_drawing(event) {
 		if (event.ctrlKey && event.key === "s") {
-			window.location = canvas.toDataURL('image/png');
+			save_drawing();
 		}
 	}
 
