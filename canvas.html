@@ -142,7 +142,8 @@
 	}
 
 	function process_drawing(event) {
-		if (event.ctrlKey && event.key === "s") {
+		if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+			event.preventDefault();
 			save_drawing();
 		}
 	}
