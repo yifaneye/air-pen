@@ -70,12 +70,13 @@
 </div>
 
 <script>
+	const CANVAS_SCALE = 2;
 	const canvas = document.querySelector('#o-canvas');
 	const clearButton = document.getElementById("o-clear-button");
 	const saveButton = document.getElementById("o-save-button");
 
-	canvas.width = window.innerWidth - 40;
-	canvas.height = window.innerHeight - 40;
+	canvas.width = window.innerWidth * CANVAS_SCALE;
+	canvas.height = window.innerHeight * CANVAS_SCALE;
 	canvas.addEventListener('mousedown', start_drawing);
 	canvas.addEventListener('touchstart', start_drawing);
 	canvas.addEventListener('mousemove', draw);
@@ -91,7 +92,7 @@
 	context.strokeStyle = 'black';
 	context.lineJoin = 'round';
 	context.lineCap = 'round';
-	context.lineWidth = 5;
+	context.lineWidth = 2 * CANVAS_SCALE;
 
 	class Pen {
 		/**
@@ -115,38 +116,54 @@
 			this.isOn = false;
 		}
 
-		record_position({offsetX, offsetY}) {
-			this.x = offsetX;
-			this.y = offsetY;
+		record_position(x, y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		set_position(e) {
+			const x = e.pageX * CANVAS_SCALE;
+			const y = e.pageY * CANVAS_SCALE;
+			this.record_position(x, y);
+		}
+
+		start_drawing(e) {
+			this.turn_on();
+			context.beginPath();
+			this.set_position(e);
+			context.moveTo(this.x, this.y);
+		}
+
+		draw(e) {
+			context.beginPath();
+			context.moveTo(this.x, this.y);
+			this.set_position(e);
+			context.lineTo(this.x, this.y);
+			context.stroke();
+		}
+
+		stop_drawing() {
+			this.turn_off();
 		}
 	}
 
 	let pen = null;
 	pen = new Pen();
 
-	function start_drawing(event) {
-		if (event.pointerType === 'touch') return;
-
-		pen.turn_on();
-
-		pen.record_position(event);
+	function start_drawing(e) {
+		e.preventDefault();
+		pen.start_drawing(e);
 	}
 
-	function draw(event) {
+	function draw(e) {
+		e.preventDefault();
 		if (!pen.isOn) return;
-
-		context.beginPath();
-		context.moveTo(pen.x, pen.y);
-		context.lineTo(event.offsetX, event.offsetY);
-		context.stroke();
-
-		pen.record_position(event);
+		pen.draw(e);
 	}
 
-	function stop_drawing(event) {
-		pen.turn_off();
-
-		pen.record_position(event);
+	function stop_drawing(e) {
+		e.preventDefault();
+		pen.stop_drawing();
 	}
 
 	function clear_drawing() {
