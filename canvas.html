@@ -125,7 +125,7 @@
 			const x = e.pageX * CANVAS_SCALE;
 			const y = e.pageY * CANVAS_SCALE;
 			const force = (e.touches && e.touches[0] && e.touches[0]["force"]) || 0.1;
-			context.lineWidth = (Math.exp(1.1 * force) + 1) * CANVAS_SCALE;
+			context.lineWidth = (Math.exp(1.2 * force) + 3) * CANVAS_SCALE;
 			this.record_position(x, y);
 		}
 
