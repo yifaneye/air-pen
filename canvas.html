@@ -76,10 +76,13 @@
 
 	canvas.width = window.innerWidth - 40;
 	canvas.height = window.innerHeight - 40;
-	canvas.addEventListener('pointerdown', start_drawing);
-	canvas.addEventListener('pointermove', draw);
-	canvas.addEventListener('pointerup', stop_drawing);
+	canvas.addEventListener('mousedown', start_drawing);
+	canvas.addEventListener('touchstart', start_drawing);
+	canvas.addEventListener('mousemove', draw);
+	canvas.addEventListener('touchmove', draw);
+	canvas.addEventListener('mouseup', stop_drawing);
 	canvas.addEventListener('mouseout', stop_drawing);
+	canvas.addEventListener('touchend', stop_drawing);
 	clearButton.addEventListener('click', clear_drawing);
 	saveButton.addEventListener('click', save_drawing);
 	document.addEventListener('keydown', process_drawing);
