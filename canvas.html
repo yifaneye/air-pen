@@ -97,6 +97,15 @@
 	context.lineCap = 'round';
 	context.lineWidth = 2 * CANVAS_SCALE;
 
+	// retrieve saved canvas from local storage
+	if (localStorage.getItem('saved-canvas')) {
+		savedCanvas = new Image();
+		savedCanvas.addEventListener("load", function () {
+			context.drawImage(savedCanvas, 0, 0);
+		});
+		savedCanvas.src = localStorage.getItem('saved-canvas');
+	}
+
 	class Pen {
 		/**
 		 * @return {null}
@@ -179,8 +188,14 @@
 		if (pen.hasGrid) return;
 		context.strokeStyle = "#ccc";
 		context.lineWidth = CANVAS_SCALE;
-		for (let x = 0; x < canvas.width; x += 100 * CANVAS_SCALE) { context.moveTo(x, 0); context.lineTo(x, canvas.height); }
-		for (let y = 0; y < canvas.height; y += 100 * CANVAS_SCALE) { context.moveTo(0, y); context.lineTo(canvas.width, y); }
+		for (let x = 0; x < canvas.width; x += 100 * CANVAS_SCALE) {
+			context.moveTo(x, 0);
+			context.lineTo(x, canvas.height);
+		}
+		for (let y = 0; y < canvas.height; y += 100 * CANVAS_SCALE) {
+			context.moveTo(0, y);
+			context.lineTo(canvas.width, y);
+		}
 		context.stroke();
 		pen.hasGrid = true;
 
@@ -189,6 +204,7 @@
 	}
 
 	function save_drawing() {
+		localStorage.setItem('saved-canvas', canvas.toDataURL('image/png'));
 		window.location = canvas.toDataURL('image/png');
 	}
 
